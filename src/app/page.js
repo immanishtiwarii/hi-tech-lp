@@ -197,29 +197,33 @@ export default function Home() {
     return e;
   };
 
-  const handleSubmit = async (ev) => {
-    ev.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const payload = new URLSearchParams({
-        ...form,
-        secret_key: "el8zD5D2IzezTKBFx3iO",
-        institute_id: "[]",
-        city: "70",
-      });
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbwHvUvMRNeCQ9MNw8QOke8FwEdXm5mikoWvPcu5clBl29ZQ1C5UgiKOQp8HWjmPaQQ3/exec",
-        { method: "POST", body: payload },
-      );
-    } catch {}
-    setSubmitting(false);
-    setSubmitted(true);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const errs = validate();
+  if (Object.keys(errs).length) {
+    setErrors(errs);
+    return;
+  }
+  setSubmitting(true);
+  try {
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      city: form.city,           // goes into address.city if your API maps it
+      appliedCourse: form.course, // adjust key to match your form field name
+      source: "Website",
+    };
+
+    await fetch("https://admisiioncrmbackend-production.up.railway.app/api/student", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {}
+  setSubmitting(false);
+  setSubmitted(true);
+};
 
   const scrollToForm = () =>
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
